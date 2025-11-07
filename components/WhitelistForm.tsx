@@ -24,11 +24,14 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { type z } from "zod";
 
 export function WhitelistForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<WhitelistFormData>({
+  type WhitelistFormFields = z.input<typeof whitelistSchema>;
+
+  const form = useForm<WhitelistFormFields, undefined, WhitelistFormData>({
     resolver: zodResolver(whitelistSchema),
     defaultValues: {
       name: "",
@@ -36,7 +39,7 @@ export function WhitelistForm() {
       phone: "",
       siteType: "",
       siteUrl: "",
-    },
+    } satisfies WhitelistFormFields,
   });
 
   async function onSubmit(data: WhitelistFormData) {

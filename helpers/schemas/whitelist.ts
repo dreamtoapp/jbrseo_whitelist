@@ -6,13 +6,10 @@ export const whitelistSchema = z.object({
     .string()
     .min(1, "البريد الإلكتروني مطلوب")
     .email("البريد الإلكتروني غير صحيح"),
-  phone: z.preprocess(
-    (val) => (val === "" ? undefined : val),
-    z
-      .string()
-      .regex(/^05\d{8}$/, "رقم الجوال يجب أن يكون بصيغة 05xxxxxxxx")
-      .optional()
-  ),
+  phone: z
+    .union([z.literal(""), z.string().regex(/^05\d{8}$/, "رقم الجوال يجب أن يكون بصيغة 05xxxxxxxx")])
+    .optional()
+    .transform((val) => (val ? (val === "" ? undefined : val) : undefined)),
   siteType: z
     .string()
     .optional()

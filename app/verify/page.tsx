@@ -1,10 +1,10 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { verifyOtpWithToken, resendOtp } from "@/actions/verify";
 
-export default function VerifyPage() {
+function VerifyContent() {
   const search = useSearchParams();
   const token = search.get("token") || "";
   const [code, setCode] = useState("");
@@ -90,6 +90,14 @@ export default function VerifyPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background text-foreground flex items-center justify-center">جاري التحميل…</div>}>
+      <VerifyContent />
+    </Suspense>
   );
 }
 

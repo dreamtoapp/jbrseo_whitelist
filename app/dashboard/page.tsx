@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/link";
 import { checkAuth } from "@/helpers/auth";
 import { getSubscribers, getSubscribersCount, getRecentSubscribers } from "@/actions/dashboard";
 import { login, logout } from "@/actions/dashboard-auth";
@@ -90,19 +90,19 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground">
       <header className="border-b border-foreground/10 bg-foreground/[0.02]">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <h1 className="text-2xl font-bold">لوحة التحكم</h1>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <Link
               href="/dashboard/otp-mail"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-foreground/10 bg-foreground/10 hover:bg-foreground/20 focus:outline-none focus:ring-2 focus:ring-foreground/30"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-foreground/10 bg-foreground/10 px-4 py-2 hover:bg-foreground/20 focus:outline-none focus:ring-2 focus:ring-foreground/30 sm:w-auto"
             >
               معاينة البريد
             </Link>
             <form action={logout}>
               <button
                 type="submit"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 focus:outline-none focus:ring-2 focus:ring-foreground/30"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-foreground/10 bg-foreground/10 px-4 py-2 hover:bg-foreground/20 focus:outline-none focus:ring-2 focus:ring-foreground/30 sm:w-auto"
               >
                 <LogOut className="h-4 w-4" />
                 تسجيل الخروج
@@ -122,7 +122,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
             <span className="text-xs text-foreground/60">إخفاء/إظهار المؤشرات</span>
           </summary>
 
-          <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           <div className="rounded-xl border border-foreground/10 bg-foreground/[0.04] p-4 text-center">
             <Users className="mx-auto mb-2 h-5 w-5 text-foreground/70" />
             <p className="text-2xl font-bold">{totalCount}</p>
@@ -222,7 +222,80 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
             <p className="text-sm text-foreground/70 mt-1">جميع المشتركين في القائمة البيضاء</p>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="md:hidden p-4 space-y-4">
+            {subscribers.length === 0 ? (
+              <p className="text-center text-foreground/60">لا يوجد مشتركين حتى الآن</p>
+            ) : (
+              subscribers.map((subscriber) => (
+                <article
+                  key={subscriber.id}
+                  className="space-y-3 rounded-2xl border border-foreground/10 bg-background p-4 shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-base font-semibold truncate">
+                        {subscriber.name || "—"}
+                      </p>
+                      <p className="text-sm text-foreground/70 break-all">{subscriber.email}</p>
+                    </div>
+                    <span className="shrink-0">
+                      {subscriber.verified ? (
+                        <ShieldCheck className="h-4 w-4 text-emerald-500" aria-hidden="true" />
+                      ) : (
+                        <ShieldAlert className="h-4 w-4 text-amber-500" aria-hidden="true" />
+                      )}
+                    </span>
+                  </div>
+
+                  <dl className="grid grid-cols-2 gap-3 text-xs text-foreground/70">
+                    <div>
+                      <dt className="font-semibold text-foreground">الجوال</dt>
+                      <dd>{subscriber.phone || "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-foreground">نوع الموقع</dt>
+                      <dd>{subscriber.siteType || "—"}</dd>
+                    </div>
+                    <div className="col-span-2">
+                      <dt className="font-semibold text-foreground">الرابط</dt>
+                      <dd className="break-all text-blue-400">
+                        {subscriber.siteUrl ? (
+                          <a
+                            href={subscriber.siteUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 underline"
+                          >
+                            <span className="truncate max-w-[200px]">{subscriber.siteUrl}</span>
+                            <ArrowRight className="h-3 w-3" />
+                          </a>
+                        ) : (
+                          "—"
+                        )}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-foreground">الدولة</dt>
+                      <dd>{subscriber.country || "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-foreground">المدينة</dt>
+                      <dd>{subscriber.city || "—"}</dd>
+                    </div>
+                  </dl>
+
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs text-foreground/60">
+                      {formatDate(subscriber.createdAt)}
+                    </span>
+                    <SubscriberActions subscriber={subscriber} />
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
+
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-foreground/[0.02] border-b border-foreground/10">
                 <tr>

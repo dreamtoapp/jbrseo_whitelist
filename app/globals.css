@@ -55,6 +55,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-tajawal), "IBM Plex Sans Arabic", "Segoe UI", Tahoma, Geneva, sans-serif;
   }
 }
 

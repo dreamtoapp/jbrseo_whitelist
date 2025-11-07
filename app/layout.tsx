@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Tajawal } from "next/font/google";
 import { Suspense } from "react";
 import { NotificationHandler } from "@/components/NotificationHandler";
@@ -67,7 +67,6 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  viewport: "width=device-width, initial-scale=1, shrink-to-fit=no",
   icons: {
     icon: "/assets/logo.png",
     shortcut: "/assets/logo.png",
@@ -75,9 +74,17 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
+
 const tajawal = Tajawal({
   subsets: ["arabic", "latin"],
   weight: ["200", "300", "400", "500", "700", "800", "900"],
+  display: "swap",
   variable: "--font-tajawal",
 });
 
@@ -87,8 +94,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl">
-      <body className={`${tajawal.variable} font-sans`}>
+    <html lang="ar" dir="rtl" className={tajawal.variable}>
+      <body className="font-sans">
         <Suspense fallback={null}>
           <NotificationHandler />
         </Suspense>
