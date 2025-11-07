@@ -120,7 +120,7 @@ export function WhitelistForm() {
                 <Input
                   placeholder="مثال: خالد العلي"
                   autoComplete="name"
-                  className="h-11 rounded-xl bg-foreground/[0.05] border border-foreground/15 px-3"
+                  className="h-11 rounded-xl bg-foreground/[0.05] border border-foreground/15 px-3 transition-colors duration-200 focus:bg-background focus:border-foreground/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
                   {...field}
                 />
               </FormControl>
@@ -143,7 +143,7 @@ export function WhitelistForm() {
                   placeholder="you@example.com"
                   autoComplete="email"
                   inputMode="email"
-                  className="h-11 rounded-xl bg-foreground/[0.05] border border-foreground/15 px-3"
+                  className="h-11 rounded-xl bg-foreground/[0.05] border border-foreground/15 px-3 transition-colors duration-200 focus:bg-background focus:border-foreground/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
                   {...field}
                 />
               </FormControl>
@@ -164,7 +164,7 @@ export function WhitelistForm() {
                   placeholder="05xxxxxxxx"
                   autoComplete="tel"
                   inputMode="tel"
-                  className="h-11 rounded-xl bg-foreground/[0.05] border border-foreground/15 px-3"
+                  className="h-11 rounded-xl bg-foreground/[0.05] border border-foreground/15 px-3 transition-colors duration-200 focus:bg-background focus:border-foreground/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
                   {...field}
                 />
               </FormControl>
@@ -179,12 +179,12 @@ export function WhitelistForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>نوع الموقع أو النشاط (اختياري)</FormLabel>
-              <Select 
-                onValueChange={field.onChange} 
+              <Select
+                onValueChange={field.onChange}
                 value={field.value ?? ""}
               >
                 <FormControl>
-                  <SelectTrigger className="h-11 rounded-xl bg-foreground/[0.05] border border-foreground/15">
+                  <SelectTrigger className="h-11 rounded-xl bg-foreground/[0.05] border border-foreground/15 transition-colors duration-200 focus:bg-background focus:border-foreground/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20">
                     <SelectValue placeholder="— اختر —" />
                   </SelectTrigger>
                 </FormControl>
@@ -213,7 +213,7 @@ export function WhitelistForm() {
                   placeholder="https://example.com"
                   autoComplete="url"
                   inputMode="url"
-                  className="h-11 rounded-xl bg-foreground/[0.05] border border-foreground/15 px-3"
+                  className="h-11 rounded-xl bg-foreground/[0.05] border border-foreground/15 px-3 transition-colors duration-200 focus:bg-background focus:border-foreground/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
                   {...field}
                 />
               </FormControl>
@@ -225,7 +225,7 @@ export function WhitelistForm() {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="h-11 rounded-xl px-6 bg-foreground/20 hover:bg-foreground/30 text-foreground font-semibold shadow-lg"
+          className="h-11 rounded-xl px-6 bg-foreground/20 text-foreground font-semibold shadow-lg transition-transform duration-200 hover:-translate-y-0.5 hover:bg-foreground/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 disabled:cursor-not-allowed"
         >
           {isSubmitting ? "جاري الإرسال..." : "أضفني إلى القائمة البيضاء"}
         </Button>

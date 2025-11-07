@@ -1,4 +1,4 @@
-# DreamToApp - Next.js Project
+# JBRseo - Next.js Project
 
 A Next.js 14+ application with TypeScript, Tailwind CSS, shadcn/ui, Prisma ORM, and MongoDB, optimized for Vercel deployment.
 
