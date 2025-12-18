@@ -1,14 +1,14 @@
 "use server";
 
+import { auth } from "@/auth";
 import { prisma } from "@/helpers/prisma";
 
 export type SubscriberData = {
   id: string;
-  name: string | null;
+  name: string;
   email: string;
-  phone: string | null;
-  siteType: string | null;
-  siteUrl: string | null;
+  mobile: string | null;
+  brandName: string;
   country: string | null;
   city: string | null;
   verified?: boolean;
@@ -16,8 +16,17 @@ export type SubscriberData = {
   updatedAt: Date;
 };
 
+async function requireAdmin() {
+  const session = await auth();
+  if (!session || session.user.role !== "ADMIN") {
+    throw new Error("unauthorized");
+  }
+  return session;
+}
+
 export async function getSubscribers(): Promise<SubscriberData[]> {
   try {
+    await requireAdmin();
     const subscribers = await prisma.subscriber.findMany({
       orderBy: { createdAt: "desc" },
     });
@@ -30,6 +39,7 @@ export async function getSubscribers(): Promise<SubscriberData[]> {
 
 export async function getSubscribersCount(): Promise<number> {
   try {
+    await requireAdmin();
     return await prisma.subscriber.count();
   } catch (error) {
     console.error("Error counting subscribers:", error);
@@ -39,6 +49,7 @@ export async function getSubscribersCount(): Promise<number> {
 
 export async function getRecentSubscribers(count: number = 5): Promise<SubscriberData[]> {
   try {
+    await requireAdmin();
     const subscribers = await prisma.subscriber.findMany({
       take: count,
       orderBy: { createdAt: "desc" },

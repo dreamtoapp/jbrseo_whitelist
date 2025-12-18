@@ -1,29 +1,17 @@
 import { z } from "zod";
 
 export const whitelistSchema = z.object({
-  name: z.string().optional(),
-  email: z
+  name: z.string().trim().min(1, "الاسم مطلوب").max(120, "الاسم طويل جدًا"),
+  email: z.string().trim().min(1, "البريد الإلكتروني مطلوب").email("البريد الإلكتروني غير صحيح"),
+  mobile: z
     .string()
-    .min(1, "البريد الإلكتروني مطلوب")
-    .email("البريد الإلكتروني غير صحيح"),
-  phone: z
-    .union([z.literal(""), z.string().regex(/^05\d{8}$/, "رقم الجوال يجب أن يكون بصيغة 05xxxxxxxx")])
-    .optional()
-    .transform((val) => (val ? (val === "" ? undefined : val) : undefined)),
-  siteType: z
-    .string()
-    .optional()
+    .trim()
+    .transform((val) => val.replace(/\s+/g, ""))
     .refine(
-      (val) => !val || val === "" || ["store", "company", "blog", "personal", "other"].includes(val),
-      "نوع الموقع غير صحيح"
+      (val) => val.length === 0 || /^\+[1-9]\d{1,14}$/.test(val),
+      "رقم الجوال يجب أن يكون بصيغة دولية مثل +9665xxxxxxx"
     ),
-  siteUrl: z
-    .string()
-    .optional()
-    .refine(
-      (val) => !val || /^https?:\/\/.+/.test(val),
-      "رابط الموقع يجب أن يبدأ بـ http:// أو https://"
-    ),
+  brandName: z.string().trim().min(1, "اسم العلامة مطلوب").max(120, "اسم العلامة طويل جدًا"),
 });
 
 export type WhitelistFormData = z.infer<typeof whitelistSchema>;

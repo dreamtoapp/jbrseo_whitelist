@@ -5,7 +5,7 @@ import { Pencil, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { deleteSubscriber } from "@/actions/subscribers";
-import { EditSubscriberDialog } from "@/components/EditSubscriberDialog";
+import { EditSubscriberDialog } from "./EditSubscriberDialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,11 +21,10 @@ import {
 type Props = {
   subscriber: {
     id: string;
-    name: string | null;
+    name: string;
     email: string;
-    phone: string | null;
-    siteType: string | null;
-    siteUrl: string | null;
+    mobile: string | null;
+    brandName: string;
     verified?: boolean;
   };
 };

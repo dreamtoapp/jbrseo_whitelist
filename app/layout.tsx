@@ -2,7 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { Tajawal } from "next/font/google";
 import { Suspense } from "react";
 import { NotificationHandler } from "@/components/NotificationHandler";
+import { Navbar } from "@/components/Navbar";
+import { DisablePWA } from "@/components/DisablePWA";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "sweetalert2/src/sweetalert2.scss";
+import { auth } from "@/auth";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://jbrseo.com";
@@ -26,14 +30,10 @@ export const metadata: Metadata = {
     "موقع إلكتروني",
     "تجربة مستخدم",
   ],
-  applicationName: "JBRseo",
   creator: "JBRseo Team",
   publisher: "JBRseo",
   authors: [{ name: "JBRseo Team" }],
   category: "Technology",
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     locale: "ar_SA",
@@ -70,7 +70,11 @@ export const metadata: Metadata = {
   icons: {
     icon: "/assets/logo.png",
     shortcut: "/assets/logo.png",
-    apple: "/assets/logo.png",
+  },
+  other: {
+    "mobile-web-app-capable": "no",
+    "apple-mobile-web-app-capable": "no",
+    "apple-mobile-web-app-status-bar-style": "default",
   },
 };
 
@@ -88,18 +92,24 @@ const tajawal = Tajawal({
   variable: "--font-tajawal",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth().catch(() => null);
+
   return (
-    <html lang="ar" dir="rtl" className={tajawal.variable}>
+    <html lang="ar" dir="rtl" suppressHydrationWarning className={tajawal.variable}>
       <body className="font-sans">
-        <Suspense fallback={null}>
-          <NotificationHandler />
-        </Suspense>
-        {children}
+        <ThemeProvider>
+          <Suspense fallback={null}>
+            <NotificationHandler />
+            <DisablePWA />
+          </Suspense>
+          <Navbar session={session} />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

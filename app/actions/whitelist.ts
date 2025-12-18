@@ -29,6 +29,10 @@ async function getLocationFromIP(ip: string | null): Promise<{ country: string |
 export async function submitWhitelist(data: WhitelistFormData) {
   try {
     const email = data.email.trim();
+    const name = data.name.trim();
+    const mobileRaw = data.mobile.trim();
+    const mobile = mobileRaw.length > 0 ? mobileRaw : null;
+    const brandName = data.brandName.trim();
 
     const existingSubscriber = await prisma.subscriber.findUnique({ where: { email } });
 
@@ -53,17 +57,14 @@ export async function submitWhitelist(data: WhitelistFormData) {
     const baseUrl = `${proto}://${host}`;
 
     if (existingSubscriber) {
+      const mobileUpdate = mobile ? { mobile } : {};
       if (existingSubscriber.verified) {
         await prisma.subscriber.update({
           where: { id: existingSubscriber.id },
           data: {
-            name: data.name?.trim() || existingSubscriber.name,
-            phone: data.phone?.trim() || existingSubscriber.phone,
-            siteType:
-              data.siteType && data.siteType !== ""
-                ? data.siteType
-                : existingSubscriber.siteType,
-            siteUrl: data.siteUrl?.trim() || existingSubscriber.siteUrl,
+            name,
+            brandName,
+            ...mobileUpdate,
             country: location.country ?? existingSubscriber.country,
             city: location.city ?? existingSubscriber.city,
           },
@@ -75,13 +76,9 @@ export async function submitWhitelist(data: WhitelistFormData) {
       await prisma.subscriber.update({
         where: { id: existingSubscriber.id },
         data: {
-          name: data.name?.trim() || existingSubscriber.name,
-          phone: data.phone?.trim() || existingSubscriber.phone,
-          siteType:
-            data.siteType && data.siteType !== ""
-              ? data.siteType
-              : existingSubscriber.siteType,
-          siteUrl: data.siteUrl?.trim() || existingSubscriber.siteUrl,
+          name,
+          brandName,
+          ...mobileUpdate,
           country: location.country ?? existingSubscriber.country,
           city: location.city ?? existingSubscriber.city,
         },
@@ -100,11 +97,10 @@ export async function submitWhitelist(data: WhitelistFormData) {
 
     const created = await prisma.subscriber.create({
       data: {
-        name: data.name?.trim() || null,
+        name,
         email,
-        phone: data.phone?.trim() || null,
-        siteType: data.siteType && data.siteType !== "" ? data.siteType : null,
-        siteUrl: data.siteUrl?.trim() || null,
+        mobile,
+        brandName,
         country: location.country,
         city: location.city,
         verified: false,

@@ -1,10 +1,10 @@
 import crypto from "crypto";
 
-const CODE_LENGTH = 6;
+const CODE_LENGTH = 4;
 const OTP_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export function generateOtpCode(): string {
-  const code = (Math.floor(100000 + Math.random() * 900000)).toString();
+  const code = Math.floor(1000 + Math.random() * 9000).toString();
   return code.padStart(CODE_LENGTH, "0");
 }
 

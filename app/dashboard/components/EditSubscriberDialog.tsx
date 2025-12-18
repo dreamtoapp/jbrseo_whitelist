@@ -7,11 +7,14 @@ import { z } from "zod";
 import { updateSubscriber } from "@/actions/subscribers";
 
 const schema = z.object({
-  name: z.string().max(120).optional().nullable(),
+  name: z.string().trim().min(1).max(120),
   email: z.string().email(),
-  phone: z.string().max(50).optional().nullable(),
-  siteType: z.string().max(50).optional().nullable(),
-  siteUrl: z.string().url().optional().nullable(),
+  mobile: z
+    .string()
+    .trim()
+    .transform((val) => val.replace(/\s+/g, ""))
+    .refine((val) => val.length === 0 || /^\+[1-9]\d{1,14}$/.test(val)),
+  brandName: z.string().trim().min(1).max(120),
   verified: z.boolean(),
 });
 
@@ -20,11 +23,10 @@ export type EditSubscriberForm = z.infer<typeof schema>;
 type Props = {
   subscriber: {
     id: string;
-    name: string | null;
+    name: string;
     email: string;
-    phone: string | null;
-    siteType: string | null;
-    siteUrl: string | null;
+    mobile: string | null;
+    brandName: string;
     verified?: boolean;
   };
   onClose: () => void;
@@ -37,11 +39,10 @@ export function EditSubscriberDialog({ subscriber, onClose }: Props) {
   const form = useForm<EditSubscriberForm>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: subscriber.name ?? "",
+      name: subscriber.name,
       email: subscriber.email,
-      phone: subscriber.phone ?? "",
-      siteType: subscriber.siteType ?? "",
-      siteUrl: subscriber.siteUrl ?? "",
+      mobile: subscriber.mobile ?? "",
+      brandName: subscriber.brandName,
       verified: !!subscriber.verified,
     },
   });
@@ -49,14 +50,7 @@ export function EditSubscriberDialog({ subscriber, onClose }: Props) {
   async function onSubmit(values: EditSubscriberForm) {
     setSubmitting(true);
     setError(null);
-    const payload = {
-      ...values,
-      name: values.name ? values.name : null,
-      phone: values.phone ? values.phone : null,
-      siteType: values.siteType ? values.siteType : null,
-      siteUrl: values.siteUrl ? values.siteUrl : null,
-    };
-    const res = await updateSubscriber(subscriber.id, payload as any);
+    const res = await updateSubscriber(subscriber.id, values);
     if (!res.success) {
       setError(res.error === "email_taken" ? "هذا البريد مستخدم بالفعل." : "تعذر حفظ التغييرات.");
     } else {
@@ -72,23 +66,19 @@ export function EditSubscriberDialog({ subscriber, onClose }: Props) {
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
           <div>
             <label className="text-sm">الاسم</label>
-            <input className="mt-1 h-10 w-full rounded-xl border border-foreground/15 bg-foreground/[0.05] px-3" {...form.register("name")} />
+            <input className="mt-1 h-10 w-full rounded-xl border border-foreground/15 bg-foreground/[0.05] px-3" required {...form.register("name")} />
           </div>
           <div>
             <label className="text-sm">البريد الإلكتروني</label>
-            <input type="email" className="mt-1 h-10 w-full rounded-xl border border-foreground/15 bg-foreground/[0.05] px-3" {...form.register("email")} />
+            <input type="email" className="mt-1 h-10 w-full rounded-xl border border-foreground/15 bg-foreground/[0.05] px-3" required {...form.register("email")} />
           </div>
           <div>
             <label className="text-sm">الجوال</label>
-            <input className="mt-1 h-10 w-full rounded-xl border border-foreground/15 bg-foreground/[0.05] px-3" {...form.register("phone")} />
+            <input className="mt-1 h-10 w-full rounded-xl border border-foreground/15 bg-foreground/[0.05] px-3" {...form.register("mobile")} />
           </div>
           <div>
-            <label className="text-sm">نوع الموقع</label>
-            <input className="mt-1 h-10 w-full rounded-xl border border-foreground/15 bg-foreground/[0.05] px-3" {...form.register("siteType")} />
-          </div>
-          <div>
-            <label className="text-sm">رابط الموقع</label>
-            <input type="url" className="mt-1 h-10 w-full rounded-xl border border-foreground/15 bg-foreground/[0.05] px-3" {...form.register("siteUrl")} />
+            <label className="text-sm">اسم العلامة التجارية</label>
+            <input className="mt-1 h-10 w-full rounded-xl border border-foreground/15 bg-foreground/[0.05] px-3" required {...form.register("brandName")} />
           </div>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" {...form.register("verified")} />
@@ -104,6 +94,7 @@ export function EditSubscriberDialog({ subscriber, onClose }: Props) {
     </div>
   );
 }
+
 
 
 

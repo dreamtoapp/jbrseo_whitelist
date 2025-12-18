@@ -47,6 +47,20 @@ export function NotificationHandler() {
       const hash = window.location.hash;
       const newUrl = newParams.toString() ? `?${newParams.toString()}${hash}` : `${window.location.pathname}${hash}`;
       router.replace(newUrl);
+    } else if (error === "not-registered") {
+      showErrorNotification("البريد الإلكتروني غير مسجل في القائمة البيضاء. يرجى التسجيل في القائمة البيضاء أولاً.");
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.delete("error");
+      const hash = window.location.hash;
+      const newUrl = newParams.toString() ? `?${newParams.toString()}${hash}` : `${window.location.pathname}${hash}`;
+      router.replace(newUrl);
+    } else if (error === "not-verified") {
+      showErrorNotification("البريد الإلكتروني غير مفعّل. يرجى التحقق من بريدك الإلكتروني أولاً.");
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.delete("error");
+      const hash = window.location.hash;
+      const newUrl = newParams.toString() ? `?${newParams.toString()}${hash}` : `${window.location.pathname}${hash}`;
+      router.replace(newUrl);
     }
   }, [searchParams, router]);
 

@@ -1,9 +1,30 @@
 "use server";
 
+import { headers } from "next/headers";
 import { prisma } from "@/helpers/prisma";
 import { hmacHash, verifyHmac } from "@/helpers/tokens";
 import { generateOtpCode, computeExpiryDate } from "@/helpers/otp";
 import { sendOtpEmail } from "@/helpers/email";
+
+function getAbsoluteBaseUrlFromEnv(): string {
+  const explicit = process.env.RESEND_ASSET_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL;
+  if (explicit) return explicit.replace(/\/$/, "");
+  const vercelUrl = process.env.VERCEL_URL;
+  if (vercelUrl) return `https://${vercelUrl.replace(/\/$/, "")}`;
+  return "https://jbrseo.com";
+}
+
+async function getAbsoluteBaseUrlFromRequest(): Promise<string | null> {
+  try {
+    const headersList = await headers();
+    const proto = headersList.get("x-forwarded-proto") || "http";
+    const host = headersList.get("x-forwarded-host") || headersList.get("host");
+    if (!host) return null;
+    return `${proto}://${host}`.replace(/\/$/, "");
+  } catch {
+    return null;
+  }
+}
 
 export async function verifyOtpWithToken(token: string, code: string) {
   try {
@@ -20,6 +41,10 @@ export async function verifyOtpWithToken(token: string, code: string) {
 
     if (subscriber.verified) {
       return { success: true, alreadyVerified: true } as const;
+    }
+
+    if (subscriber.verifyTokenExpiresAt && subscriber.verifyTokenExpiresAt < new Date()) {
+      return { success: false, error: "token_expired" } as const;
     }
 
     if (!subscriber.otpCode || !subscriber.otpExpiresAt) {
@@ -62,18 +87,20 @@ export async function resendOtp(token: string) {
     });
 
     if (!subscriber) return { success: false, error: "not_found" } as const;
+    if (subscriber.verified) return { success: false, error: "already_verified" } as const;
 
     const newCode = generateOtpCode();
     const newHash = hmacHash(newCode);
     const newExpiry = computeExpiryDate();
+    const newTokenExpiry = computeExpiryDate();
 
     await prisma.subscriber.update({
       where: { id: subscriber.id },
-      data: { otpCode: newHash, otpExpiresAt: newExpiry },
+      data: { otpCode: newHash, otpExpiresAt: newExpiry, verifyTokenExpiresAt: newTokenExpiry },
     });
 
-    // Reuse the same token link
-    const link = `/verify?token=${encodeURIComponent(token)}`;
+    const baseUrl = (await getAbsoluteBaseUrlFromRequest()) ?? getAbsoluteBaseUrlFromEnv();
+    const link = `${baseUrl}/verify?token=${encodeURIComponent(token)}`;
     await sendOtpEmail({ to: subscriber.email, code: newCode, link });
 
     return { success: true } as const;
