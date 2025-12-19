@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
-import { resendWhitelistVerification } from "@/app/actions/whitelist";
+import { resendWhitelistVerification } from "@/app/hompage/actions/whitelist";
 import { showSuccessNotification, showErrorNotification } from "@/helpers/notifications";
 
 type Props = {
@@ -73,6 +73,13 @@ export function VerificationAlert({ email }: Props) {
     </div>
   );
 }
+
+
+
+
+
+
+
 
 
 

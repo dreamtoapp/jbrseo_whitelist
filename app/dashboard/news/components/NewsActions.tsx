@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import Link from "@/components/link";
 import { Pencil, Trash2, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -106,7 +106,7 @@ export function NewsActions({ post }: Props) {
             <AlertDialogHeader>
               <AlertDialogTitle>تأكيد حذف المنشور</AlertDialogTitle>
               <AlertDialogDescription>
-                سيتم حذف المنشور "{post.title}" نهائيًا. لن تستطيع التراجع عن هذه العملية.
+                سيتم حذف المنشور &quot;{post.title}&quot; نهائيًا. لن تستطيع التراجع عن هذه العملية.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -121,6 +121,13 @@ export function NewsActions({ post }: Props) {
     </>
   );
 }
+
+
+
+
+
+
+
 
 
 

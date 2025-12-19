@@ -74,10 +74,9 @@ export function generateArticleSchema(
     createdAt: Date;
     updatedAt: Date;
   },
-  siteUrl: string,
-  userId: string
+  siteUrl: string
 ): Record<string, unknown> {
-  const url = `${siteUrl}/client/${userId}/news/${encodeURIComponent(post.slug)}`;
+  const url = `${siteUrl}/news/${encodeURIComponent(post.slug)}`;
   const image = `${siteUrl}/assets/logo.png`;
   const wordCount = post.content ? post.content.trim().split(/\s+/).length : 0;
 
@@ -131,6 +130,13 @@ export function generateBreadcrumbsSchema(
     })),
   };
 }
+
+
+
+
+
+
+
 
 
 

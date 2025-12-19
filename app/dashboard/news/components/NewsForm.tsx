@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/link";
 import { ArrowRight } from "lucide-react";
 
 import { createNewsPost, updateNewsPost } from "../actions/news";
@@ -320,6 +320,13 @@ export function NewsForm({ post }: Props) {
     </div>
   );
 }
+
+
+
+
+
+
+
 
 
 

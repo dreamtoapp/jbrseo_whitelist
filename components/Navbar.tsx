@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/link";
 import Image from "next/image";
 import { ChevronRight, Menu, Moon, Sun, X, LayoutDashboard, Newspaper, LogOut, User } from "lucide-react";
 import { useTheme } from "next-themes";
-import { logout } from "@/app/actions/auth";
+import { logout } from "@/app/hompage/actions/auth";
 
 type NavbarProps = {
   session: {
@@ -26,6 +26,9 @@ export function Navbar({ session }: NavbarProps) {
   const { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
+    // Close mobile menu when navigating to a new page
+    // This is a legitimate side effect of route changes
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
@@ -40,7 +43,10 @@ export function Navbar({ session }: NavbarProps) {
     };
   }, [isMobileMenuOpen]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    // Track mount state to prevent hydration mismatch with theme
+    // This pattern is necessary to avoid SSR/client mismatch when rendering theme-dependent icons
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -48,8 +54,8 @@ export function Navbar({ session }: NavbarProps) {
   const isInDashboard = pathname.startsWith("/dashboard");
   const isDark = resolvedTheme === "dark";
 
-  // Hide global navbar on homepage - it has its own marketing header
-  if (pathname === "/") {
+  // Hide global navbar on homepage and dashboard - they have their own headers
+  if (pathname === "/" || isInDashboard) {
     return null;
   }
 
@@ -102,16 +108,26 @@ export function Navbar({ session }: NavbarProps) {
                 <span className="h-5 w-5" />
               )}
             </button>
+            <Link
+              href="/news"
+              className={`rounded-xl px-4 py-2 inline-flex items-center gap-2 text-sm font-medium transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-foreground/30 ${isActive("/news")
+                ? "bg-foreground/20 text-foreground border border-foreground/20"
+                : "bg-foreground/10 hover:bg-foreground/20 border border-foreground/10"
+                }`}
+            >
+              <Newspaper className="h-4 w-4" />
+              <span>آخر الأخبار</span>
+            </Link>
             {!session ? (
               <>
-                <a
+                <Link
                   href="/#join"
                   className="group rounded-xl bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 px-4 py-2 inline-flex items-center gap-2 text-sm font-medium transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-foreground/30"
                   aria-label="انتقل إلى نموذج الانضمام"
                 >
                   <span>انضم مبكرًا واحجز مكانك</span>
                   <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-[-2px]" />
-                </a>
+                </Link>
                 <Link
                   href="/signin"
                   className="rounded-xl bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 p-2 inline-flex items-center justify-center transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-foreground/30"
@@ -122,42 +138,16 @@ export function Navbar({ session }: NavbarProps) {
               </>
             ) : (
               <>
-                {session.user.role === "ADMIN" && (
-                  <>
-                    {!isInDashboard && (
-                      <Link
-                        href="/dashboard"
-                        className={`rounded-xl px-4 py-2 inline-flex items-center gap-2 text-sm font-medium transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-foreground/30 ${isActive("/dashboard")
-                          ? "bg-foreground/20 text-foreground border border-foreground/20"
-                          : "bg-foreground/10 hover:bg-foreground/20 border border-foreground/10"
-                          }`}
-                      >
-                        <LayoutDashboard className="h-4 w-4" />
-                        <span>لوحة التحكم</span>
-                      </Link>
-                    )}
-                    <Link
-                      href="/client"
-                      className={`rounded-xl px-4 py-2 inline-flex items-center gap-2 text-sm font-medium transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-foreground/30 ${isActive("/client")
-                        ? "bg-foreground/20 text-foreground border border-foreground/20"
-                        : "bg-foreground/10 hover:bg-foreground/20 border border-foreground/10"
-                        }`}
-                    >
-                      <Newspaper className="h-4 w-4" />
-                      <span>آخر الأخبار</span>
-                    </Link>
-                  </>
-                )}
-                {session.user.role === "CLIENT" && (
+                {session.user.role === "ADMIN" && !isInDashboard && (
                   <Link
-                    href="/client"
-                    className={`rounded-xl px-4 py-2 inline-flex items-center gap-2 text-sm font-medium transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-foreground/30 ${isActive("/client")
+                    href="/dashboard"
+                    className={`rounded-xl px-4 py-2 inline-flex items-center gap-2 text-sm font-medium transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-foreground/30 ${isActive("/dashboard")
                       ? "bg-foreground/20 text-foreground border border-foreground/20"
                       : "bg-foreground/10 hover:bg-foreground/20 border border-foreground/10"
                       }`}
                   >
-                    <Newspaper className="h-4 w-4" />
-                    <span>آخر الأخبار</span>
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span>لوحة التحكم</span>
                   </Link>
                 )}
                 <div className="h-6 w-px bg-foreground/20 mx-1" aria-hidden="true" />
@@ -207,16 +197,27 @@ export function Navbar({ session }: NavbarProps) {
                   <span className="h-4 w-4" />
                 )}
               </button>
+              <Link
+                href="/news"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive("/news")
+                  ? "bg-foreground/20 text-foreground"
+                  : "bg-foreground/10 hover:bg-foreground/20"
+                  }`}
+              >
+                <Newspaper className="h-4 w-4" />
+                <span>آخر الأخبار</span>
+              </Link>
               {!session ? (
                 <>
-                  <a
+                  <Link
                     href="/#join"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center justify-between rounded-xl bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 px-4 py-3 text-sm font-medium transition-colors"
                   >
                     <span>انضم مبكرًا واحجز مكانك</span>
                     <ChevronRight className="h-4 w-4" />
-                  </a>
+                  </Link>
                   <Link
                     href="/signin"
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -228,45 +229,17 @@ export function Navbar({ session }: NavbarProps) {
                 </>
               ) : (
                 <>
-                  {session.user.role === "ADMIN" && (
-                    <>
-                      {!isInDashboard && (
-                        <Link
-                          href="/dashboard"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive("/dashboard")
-                            ? "bg-foreground/20 text-foreground"
-                            : "bg-foreground/10 hover:bg-foreground/20"
-                            }`}
-                        >
-                          <LayoutDashboard className="h-4 w-4" />
-                          <span>لوحة التحكم</span>
-                        </Link>
-                      )}
-                      <Link
-                        href="/client"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive("/client")
-                          ? "bg-foreground/20 text-foreground"
-                          : "bg-foreground/10 hover:bg-foreground/20"
-                          }`}
-                      >
-                        <Newspaper className="h-4 w-4" />
-                        <span>آخر الأخبار</span>
-                      </Link>
-                    </>
-                  )}
-                  {session.user.role === "CLIENT" && (
+                  {session.user.role === "ADMIN" && !isInDashboard && (
                     <Link
-                      href="/client"
+                      href="/dashboard"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive("/client")
+                      className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive("/dashboard")
                         ? "bg-foreground/20 text-foreground"
                         : "bg-foreground/10 hover:bg-foreground/20"
                         }`}
                     >
-                      <Newspaper className="h-4 w-4" />
-                      <span>آخر الأخبار</span>
+                      <LayoutDashboard className="h-4 w-4" />
+                      <span>لوحة التحكم</span>
                     </Link>
                   )}
                   <div className="h-px bg-foreground/10 my-2" aria-hidden="true" />
@@ -286,6 +259,13 @@ export function Navbar({ session }: NavbarProps) {
     </header>
   );
 }
+
+
+
+
+
+
+
 
 
 

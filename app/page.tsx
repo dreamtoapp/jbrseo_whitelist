@@ -1,9 +1,9 @@
-import { HomePage } from "./components/HomePage";
+import { HomePage } from "./hompage/components/HomePage";
 import type { Metadata } from "next";
 import { prisma } from "@/helpers/prisma";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// Use ISR for the landing page to maximize performance and SEO
+export const revalidate = 300;
 
 async function getHomePageContent() {
   const content = await prisma.homePageConfig.findUnique({

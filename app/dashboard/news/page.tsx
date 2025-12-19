@@ -1,6 +1,5 @@
 import { prisma } from "@/helpers/prisma";
 import { NewsPageClient } from "./components/NewsPageClient";
-import { DashboardNav } from "../components/DashboardNav";
 
 export default async function DashboardNewsPage() {
   const posts = await prisma.newsPost.findMany({
@@ -21,12 +20,9 @@ export default async function DashboardNewsPage() {
   });
 
   return (
-    <div dir="rtl" className="min-h-screen bg-background text-foreground">
-      <DashboardNav />
-      <main className="container mx-auto px-4 py-10 space-y-8">
-        <NewsPageClient initialPosts={posts} />
-      </main>
-    </div>
+    <main className="container mx-auto px-4 py-10 space-y-8">
+      <NewsPageClient initialPosts={posts} />
+    </main>
   );
 }
 

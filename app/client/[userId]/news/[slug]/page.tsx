@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
 import Script from "next/script";
-import Link from "next/link";
+import Link from "@/components/link";
 import Image from "next/image";
 
-import { auth } from "@/auth";
 import { prisma } from "@/helpers/prisma";
 import { generateArticleSchema, generateBreadcrumbsSchema, generateMetaDescription } from "@/helpers/seo";
 
@@ -86,16 +85,6 @@ export default async function NewsPostPage({ params }: Props) {
   const { userId, slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
 
-  const session = await auth();
-  if (!session) {
-    notFound();
-  }
-
-  const isAdmin = session.user.role === "ADMIN";
-  if (!isAdmin && session.user.id !== userId) {
-    notFound();
-  }
-
   const post = await prisma.newsPost.findUnique({
     where: { slug: decodedSlug },
   });
@@ -105,7 +94,7 @@ export default async function NewsPostPage({ params }: Props) {
   }
 
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://jbrseo.com").replace(/\/$/, "");
-  const articleSchema = generateArticleSchema(post, siteUrl, userId);
+  const articleSchema = generateArticleSchema(post, siteUrl);
   const breadcrumbsSchema = generateBreadcrumbsSchema(
     [
       { name: "الرئيسية", url: "/" },
@@ -209,6 +198,13 @@ export default async function NewsPostPage({ params }: Props) {
     </>
   );
 }
+
+
+
+
+
+
+
 
 
 

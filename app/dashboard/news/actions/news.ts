@@ -63,7 +63,7 @@ export async function createNewsPost(input: {
     });
 
     revalidatePath("/dashboard/news");
-    revalidatePath("/client");
+    revalidatePath("/news");
 
     return { success: true } as const;
   } catch (error) {
@@ -117,8 +117,8 @@ export async function updateNewsPost(input: {
     });
 
     revalidatePath("/dashboard/news");
-    revalidatePath("/client");
-    revalidatePath(`/client/*/news/${encodeURIComponent(uniqueSlug)}`);
+    revalidatePath("/news");
+    revalidatePath(`/news/${encodeURIComponent(uniqueSlug)}`);
 
     return { success: true } as const;
   } catch (error) {
@@ -148,8 +148,8 @@ export async function togglePublish(postId: string) {
     });
 
     revalidatePath("/dashboard/news");
-    revalidatePath("/client");
-    revalidatePath(`/client/*/news/${encodeURIComponent(post.slug)}`);
+    revalidatePath("/news");
+    revalidatePath(`/news/${encodeURIComponent(post.slug)}`);
 
     return { success: true } as const;
   } catch (error) {
@@ -170,9 +170,9 @@ export async function deleteNewsPost(postId: string) {
     await prisma.newsPost.delete({ where: { id: postId } });
 
     revalidatePath("/dashboard/news");
-    revalidatePath("/client");
+    revalidatePath("/news");
     if (post) {
-      revalidatePath(`/client/*/news/${encodeURIComponent(post.slug)}`);
+      revalidatePath(`/news/${encodeURIComponent(post.slug)}`);
     }
 
     return { success: true } as const;

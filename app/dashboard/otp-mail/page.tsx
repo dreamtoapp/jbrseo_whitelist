@@ -1,6 +1,5 @@
 import { renderOtpEmailHtml } from "@/helpers/email";
 import { OtpMailPreview } from "./components/OtpMailPreview";
-import { DashboardNav } from "../components/DashboardNav";
 
 export default async function DashboardOtpMailPreviewPage() {
   const baseUrl = (() => {
@@ -16,10 +15,7 @@ export default async function DashboardOtpMailPreviewPage() {
   });
 
   return (
-    <div dir="rtl" className="min-h-screen bg-background text-foreground">
-      <DashboardNav />
-      <OtpMailPreview previewHtml={previewHtml} />
-    </div>
+    <OtpMailPreview previewHtml={previewHtml} />
   );
 }
 

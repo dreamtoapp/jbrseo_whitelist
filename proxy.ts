@@ -30,6 +30,11 @@ const proxy = auth((req: NextAuthRequest) => {
   }
 
   if (pathname.startsWith("/client")) {
+    // Allow public access to news routes
+    if (pathname.includes("/news")) {
+      return NextResponse.next();
+    }
+
     if (!session) return redirectToSignIn(req);
 
     if (pathname === "/client" || pathname === "/client/") {

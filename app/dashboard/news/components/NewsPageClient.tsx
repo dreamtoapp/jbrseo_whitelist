@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/link";
 import { Plus } from "lucide-react";
 
 import { NewsTable } from "./NewsTable";
@@ -49,6 +49,13 @@ export function NewsPageClient({ initialPosts }: Props) {
     </>
   );
 }
+
+
+
+
+
+
+
 
 
 

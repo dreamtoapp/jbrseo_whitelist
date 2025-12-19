@@ -4,7 +4,7 @@
 
 import { usePathname } from "next/navigation";
 
-import Link from "next/link";
+import Link from "@/components/link";
 
 import { Newspaper, Mail, Settings, Send } from "lucide-react";
 
@@ -203,6 +203,13 @@ export function DashboardNav() {
   );
 
 }
+
+
+
+
+
+
+
 
 
 

@@ -54,6 +54,34 @@ export function HomePageConfigForm({ initialData }: HomePageConfigFormProps) {
     social: true,
   });
 
+  const getDefaultValues = (): HomePageConfigFormValues => ({
+    heroTitlePrimary: "قريبًا…",
+    heroTitleSecondary: "حضورك الرقمي لن يكون كما كان من قبل.",
+    heroDescription:
+      "فريق تقني وإبداعي يعمل بصمت على تجربة مختلفة كليًا. التفاصيل محجوبة الآن — لكن من ينضم مبكرًا سيعرف أولًا، وسيحصل على ميزة لا تتكرر.",
+    bulletsText: [
+      "ليست أداة تقليدية… بل نقلة في طريقة الحضور على الإنترنت.",
+      "أذكى، أقوى، وأبسط — لأصحاب المواقع من كل الأنواع.",
+      "وصول مبكر + مزايا خاصة للدفعة الأولى.",
+    ].join("\n"),
+    heroImageUrl: "",
+    heroImageAlt: "",
+    joinTitle: "انضم إلى القائمة البيضاء",
+    joinDescription: "ضع بريدك الإلكتروني لتكون ضمن الدفعة الأولى من التجربة المغلقة.",
+    privacyText: "لن نشارك بريدك. الدعوات تُرسل على دفعات.",
+    badgeText: "مشروع سعودي — نسخة ما قبل الإطلاق",
+    footerCopyright: "© 2025 — فكرة سعودية تُصنع بهدوء. جميع الحقوق محفوظة.",
+    footerJoinLinkText: "القائمة البيضاء",
+    footerContactEmail: "info@example.com",
+    footerContactText: "تواصل",
+    facebookUrl: "",
+    instagramUrl: "",
+    linkedinUrl: "",
+    twitterUrl: "",
+    whatsappCommunityUrl: "",
+    telegramChannelUrl: "",
+  });
+
   const form = useForm<HomePageConfigFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -90,6 +118,28 @@ export function HomePageConfigForm({ initialData }: HomePageConfigFormProps) {
       telegramChannelUrl: initialData?.telegramChannelUrl ?? "",
     },
   });
+
+  function handleLoadDefaults() {
+    const currentValues = form.getValues();
+    const defaults = getDefaultValues();
+
+    form.reset({
+      ...currentValues,
+      heroTitlePrimary: defaults.heroTitlePrimary,
+      heroTitleSecondary: defaults.heroTitleSecondary,
+      heroDescription: defaults.heroDescription,
+      bulletsText: defaults.bulletsText,
+      joinTitle: defaults.joinTitle,
+      joinDescription: defaults.joinDescription,
+      privacyText: defaults.privacyText,
+      badgeText: defaults.badgeText,
+      footerCopyright: defaults.footerCopyright,
+      footerJoinLinkText: defaults.footerJoinLinkText,
+      footerContactText: defaults.footerContactText,
+    });
+
+    setStatusMessage("تم تحميل النصوص الافتراضية.");
+  }
 
   async function handleImageUpload(file: File) {
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
@@ -175,7 +225,7 @@ export function HomePageConfigForm({ initialData }: HomePageConfigFormProps) {
   }
 
   return (
-    <div className="rounded-2xl bg-foreground/[0.03] p-6 space-y-6">
+    <div className="rounded-2xl bg-foreground/3 p-6 space-y-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <section className="space-y-4 rounded-xl border border-foreground/10 bg-background p-4 md:p-5">
@@ -655,7 +705,15 @@ export function HomePageConfigForm({ initialData }: HomePageConfigFormProps) {
             </p>
           )}
 
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-between gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleLoadDefaults}
+              className="h-10 px-6 rounded-full text-sm font-semibold"
+            >
+              تحميل النصوص الافتراضية
+            </Button>
             <Button
               type="submit"
               disabled={isPending}
@@ -669,4 +727,11 @@ export function HomePageConfigForm({ initialData }: HomePageConfigFormProps) {
     </div>
   );
 }
+
+
+
+
+
+
+
 

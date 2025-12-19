@@ -1,13 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { Tajawal } from "next/font/google";
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { NotificationHandler } from "@/components/NotificationHandler";
 import { Navbar } from "@/components/Navbar";
 import { DisablePWA } from "@/components/DisablePWA";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import "sweetalert2/src/sweetalert2.scss";
 import { auth } from "@/auth";
 import "./globals.css";
+
+const NotificationHandler = dynamic(
+  () => import("@/components/NotificationHandler").then((mod) => ({ default: mod.NotificationHandler }))
+);
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://jbrseo.com";
 const defaultTitle = "JBRseo | مشروع سعودي لبناء حضور رقمي مبتكر";
@@ -87,8 +90,10 @@ export const viewport: Viewport = {
 
 const tajawal = Tajawal({
   subsets: ["arabic", "latin"],
-  weight: ["200", "300", "400", "500", "700", "800", "900"],
-  display: "swap",
+  weight: ["400", "700"],
+  display: "optional",
+  preload: true,
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Arial", "sans-serif"],
   variable: "--font-tajawal",
 });
 
@@ -103,7 +108,14 @@ export default async function RootLayout({
     <html lang="ar" dir="rtl" suppressHydrationWarning className={tajawal.variable}>
       <body className="font-sans">
         <ThemeProvider>
-          <Suspense fallback={null}>
+          <Suspense
+            fallback={
+              <div
+                className="h-0.5 w-full bg-foreground/10 animate-pulse"
+                aria-hidden="true"
+              />
+            }
+          >
             <NotificationHandler />
             <DisablePWA />
           </Suspense>

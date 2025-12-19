@@ -179,3 +179,10 @@ export function NewsTable({ posts, formatDate }: Props) {
 
 
 
+
+
+
+
+
+
+

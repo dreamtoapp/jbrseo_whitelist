@@ -1,7 +1,6 @@
 import { getSubscribers, getSubscribersCount, getRecentSubscribers } from "./actions/dashboard";
 import { DashboardAnalytics } from "./components/DashboardAnalytics";
 import { SubscribersTable } from "./components/SubscribersTable";
-import { DashboardNav } from "./components/DashboardNav";
 
 type DashboardProps = {
   searchParams?: {
@@ -59,26 +58,22 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   }).length;
 
   return (
-    <div dir="rtl" className="min-h-screen bg-background text-foreground">
-      <DashboardNav />
+    <main className="container mx-auto px-4 py-8">
+      <DashboardAnalytics
+        totalCount={totalCount}
+        verifiedCount={verifiedCount}
+        pendingCount={pendingCount}
+        todayCount={todayCount}
+        uniqueCountries={uniqueCountries}
+        uniqueCities={uniqueCities}
+        uniqueBrands={uniqueBrands}
+        countryCounts={countryCounts}
+        cityCounts={cityCounts}
+        brandCounts={brandCounts}
+      />
 
-      <main className="container mx-auto px-4 py-8">
-        <DashboardAnalytics
-          totalCount={totalCount}
-          verifiedCount={verifiedCount}
-          pendingCount={pendingCount}
-          todayCount={todayCount}
-          uniqueCountries={uniqueCountries}
-          uniqueCities={uniqueCities}
-          uniqueBrands={uniqueBrands}
-          countryCounts={countryCounts}
-          cityCounts={cityCounts}
-          brandCounts={brandCounts}
-        />
-
-        <SubscribersTable subscribers={subscribers} formatDate={formatDate} />
-      </main>
-    </div>
+      <SubscribersTable subscribers={subscribers} formatDate={formatDate} />
+    </main>
   );
 }
 

@@ -32,7 +32,9 @@ export async function getSubscribers(): Promise<SubscriberData[]> {
     });
     return subscribers;
   } catch (error) {
-    console.error("Error fetching subscribers:", error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching subscribers:", error);
+    }
     return [];
   }
 }
@@ -42,7 +44,9 @@ export async function getSubscribersCount(): Promise<number> {
     await requireAdmin();
     return await prisma.subscriber.count();
   } catch (error) {
-    console.error("Error counting subscribers:", error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error counting subscribers:", error);
+    }
     return 0;
   }
 }
@@ -56,7 +60,9 @@ export async function getRecentSubscribers(count: number = 5): Promise<Subscribe
     });
     return subscribers;
   } catch (error) {
-    console.error("Error fetching recent subscribers:", error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching recent subscribers:", error);
+    }
     return [];
   }
 }
